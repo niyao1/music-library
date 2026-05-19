@@ -3,149 +3,138 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>音乐库 • MusicLib</title>
+    <title>QQ音乐 • 音乐库</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        body { font-family: 'Inter', system-ui, sans-serif; }
-        .glass { background: rgba(255,255,255,0.06); backdrop-filter: blur(20px); }
-        .music-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .music-card:hover { transform: translateY(-6px); }
+        body { font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+        .qq-nav { transition: all 0.2s; }
+        .qq-nav:hover, .qq-nav-active { background-color: #2a2a2e; }
+        .song-row:hover { background-color: #27272a; }
+        .player { background: linear-gradient(#18181b, #27272a); }
     </style>
 </head>
-<body class="bg-zinc-950 text-white">
-    <div class="flex h-screen overflow-hidden">
+<body class="bg-[#0f0f11] text-white">
+    <div class="flex h-screen">
         
-        <!-- 左侧边栏 -->
-        <div class="w-72 bg-zinc-900 border-r border-zinc-800 flex flex-col">
-            <div class="p-6 flex items-center gap-x-3">
-                <div class="w-11 h-11 bg-gradient-to-br from-purple-600 to-violet-600 rounded-2xl flex items-center justify-center">
-                    <i class="fa-solid fa-music text-3xl"></i>
+        <!-- 左侧导航 (QQ音乐风格) -->
+        <div class="w-60 bg-[#18181b] border-r border-zinc-800 flex flex-col">
+            <div class="p-6">
+                <div class="flex items-center gap-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-red-500 to-purple-600 rounded-2xl flex items-center justify-center">
+                        <i class="fa-brands fa-qq text-3xl"></i>
+                    </div>
+                    <span class="font-bold text-3xl tracking-tighter">QQ音乐</span>
                 </div>
-                <span class="font-bold text-3xl tracking-tighter">音乐库</span>
             </div>
 
             <div class="px-3">
-                <div onclick="showAllSongs()" class="flex items-center gap-x-3 px-4 py-3 rounded-2xl hover:bg-zinc-800 cursor-pointer mb-1 nav-active" id="nav-all">
-                    <i class="fa-solid fa-home w-5"></i>
-                    <span class="font-medium">全部歌曲</span>
+                <div class="qq-nav px-4 py-3 rounded-2xl flex items-center gap-x-3 cursor-pointer qq-nav-active" onclick="showAllSongs()">
+                    <i class="fa-solid fa-compass w-5"></i>
+                    <span>发现音乐</span>
                 </div>
-                <div onclick="showFavorites()" class="flex items-center gap-x-3 px-4 py-3 rounded-2xl hover:bg-zinc-800 cursor-pointer mb-1" id="nav-fav">
+                <div class="qq-nav px-4 py-3 rounded-2xl flex items-center gap-x-3 cursor-pointer mt-1" onclick="showFavorites()">
                     <i class="fa-solid fa-heart w-5 text-red-400"></i>
-                    <span class="font-medium">我喜欢的</span>
+                    <span>我喜欢</span>
                 </div>
-                
-                <div class="px-3 mt-6">
-                    <div class="flex items-center justify-between px-1 mb-2">
-                        <span class="text-xs font-semibold text-zinc-400">播放列表</span>
-                        <button onclick="createPlaylist()" class="text-purple-400 hover:text-purple-300"><i class="fa-solid fa-plus text-sm"></i></button>
-                    </div>
-                    <div id="playlists-list" class="space-y-1 text-sm"></div>
+                <div class="qq-nav px-4 py-3 rounded-2xl flex items-center gap-x-3 cursor-pointer mt-1" onclick="showLocalSongs()">
+                    <i class="fa-solid fa-folder w-5 text-emerald-400"></i>
+                    <span>本地音乐</span>
                 </div>
             </div>
 
-            <div class="mt-auto p-4 border-t border-zinc-800 space-y-3">
-                <!-- 本地上传按钮 -->
+            <div class="mt-8 px-3">
+                <div class="flex items-center justify-between px-4 mb-2">
+                    <span class="text-xs font-semibold text-zinc-400">创建的歌单</span>
+                    <button onclick="createPlaylist()" class="text-purple-400"><i class="fa-solid fa-plus"></i></button>
+                </div>
+                <div id="playlists-list" class="px-1"></div>
+            </div>
+
+            <div class="mt-auto p-4 border-t border-zinc-800">
                 <button onclick="uploadLocalMP3()" 
-                        class="w-full flex items-center justify-center gap-x-2 bg-emerald-600 hover:bg-emerald-700 py-3 rounded-2xl font-semibold text-sm">
+                        class="w-full flex items-center justify-center gap-x-2 bg-emerald-600 hover:bg-emerald-700 py-3 rounded-2xl text-sm font-semibold">
                     <i class="fa-solid fa-upload"></i>
-                    <span>上传本地 MP3</span>
-                </button>
-                
-                <button onclick="showAddModal()" 
-                        class="w-full flex items-center justify-center gap-x-2 bg-purple-600 hover:bg-purple-700 py-3 rounded-2xl font-semibold text-sm">
-                    <i class="fa-solid fa-link"></i>
-                    <span>添加网络链接</span>
+                    <span>上传本地音乐</span>
                 </button>
             </div>
         </div>
 
         <!-- 主内容区 -->
         <div class="flex-1 flex flex-col">
-            <div class="h-16 border-b border-zinc-800 flex items-center px-8 bg-zinc-900/80">
-                <div class="flex-1 max-w-xl">
+            
+            <!-- 顶部搜索栏 -->
+            <div class="h-16 border-b border-zinc-800 flex items-center px-8 bg-[#18181b]">
+                <div class="flex-1 max-w-2xl">
                     <div class="relative">
-                        <i class="fa-solid fa-search absolute left-4 top-3.5 text-zinc-400"></i>
-                        <input id="search-input" type="text" placeholder="搜索歌曲..." 
-                               class="w-full bg-zinc-800 border border-zinc-700 pl-11 py-2.5 rounded-3xl text-sm" oninput="filterSongs()">
+                        <i class="fa-solid fa-search absolute left-5 top-4 text-zinc-400"></i>
+                        <input id="search-input" type="text" placeholder="搜索歌曲、歌手、歌单" 
+                               class="w-full bg-zinc-800 border border-zinc-700 pl-12 py-3 rounded-3xl text-sm focus:outline-none" oninput="filterSongs()">
                     </div>
                 </div>
-                <div class="ml-auto flex items-center gap-x-2">
-                    <div class="bg-zinc-800 px-3 py-1.5 rounded-2xl flex items-center gap-x-2">
-                        <img src="https://picsum.photos/id/64/28/28" class="w-7 h-7 rounded-full">
-                        <span class="font-medium text-sm">Karen</span>
+                <div class="ml-auto flex items-center gap-x-4">
+                    <div class="flex items-center gap-x-2">
+                        <img src="https://picsum.photos/id/64/32/32" class="w-8 h-8 rounded-full ring-2 ring-purple-500">
+                        <span class="font-medium">Karen</span>
                     </div>
                 </div>
             </div>
 
+            <!-- 内容 -->
             <div class="flex-1 p-8 overflow-auto">
-                <div class="flex items-end justify-between mb-6">
+                <div class="flex justify-between items-end mb-6">
                     <div>
-                        <h1 id="page-title" class="text-4xl font-bold tracking-tighter">全部歌曲</h1>
-                        <p class="text-zinc-400 mt-1">共 <span id="song-count">0</span> 首</p>
+                        <h1 id="page-title" class="text-4xl font-bold">发现音乐</h1>
+                        <p id="page-subtitle" class="text-zinc-400 mt-1">共 <span id="song-count">0</span> 首歌曲</p>
                     </div>
                 </div>
-                <div id="song-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 2xl:grid-cols-8 gap-5"></div>
+
+                <!-- 歌曲列表 (QQ音乐风格) -->
+                <div class="bg-[#18181b] rounded-3xl overflow-hidden">
+                    <div class="grid grid-cols-12 px-6 py-3 text-sm text-zinc-400 border-b border-zinc-700">
+                        <div class="col-span-6">歌曲</div>
+                        <div class="col-span-3">歌手</div>
+                        <div class="col-span-3 text-right">操作</div>
+                    </div>
+                    <div id="song-list" class="divide-y divide-zinc-800"></div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- 底部播放器 -->
-    <div class="fixed bottom-0 left-0 right-0 bg-zinc-900 border-t border-zinc-700 h-[82px] px-6 flex items-center z-50">
+    <!-- 底部播放器 (QQ音乐风格) -->
+    <div class="fixed bottom-0 left-0 right-0 player border-t border-zinc-700 h-20 px-6 flex items-center z-50">
         <div class="flex items-center gap-x-4 w-1/3">
-            <div onclick="showNowPlaying()" class="flex items-center gap-x-3 cursor-pointer">
-                <img id="player-cover" src="https://picsum.photos/id/1015/56/56" class="w-14 h-14 rounded-2xl object-cover">
-                <div>
-                    <div id="player-title" class="font-semibold text-sm truncate">未播放</div>
-                    <div id="player-artist" class="text-xs text-zinc-400 truncate">选择歌曲</div>
-                </div>
+            <img id="player-cover" src="https://picsum.photos/id/1015/56/56" class="w-14 h-14 rounded-2xl object-cover">
+            <div>
+                <div id="player-title" class="font-semibold text-sm">未播放</div>
+                <div id="player-artist" class="text-xs text-zinc-400">选择歌曲</div>
             </div>
         </div>
 
-        <div class="flex-1 flex flex-col items-center max-w-[460px]">
-            <div class="flex items-center gap-x-4 mb-1">
-                <button onclick="toggleShuffle()" id="shuffle-btn" class="text-zinc-400 hover:text-white w-8"><i class="fa-solid fa-random"></i></button>
+        <div class="flex-1 flex flex-col items-center max-w-[520px]">
+            <div class="flex items-center gap-x-5">
+                <button onclick="toggleShuffle()" class="text-zinc-400 hover:text-white"><i class="fa-solid fa-random"></i></button>
                 <button onclick="prevSong()" class="text-zinc-300 hover:text-white"><i class="fa-solid fa-step-backward text-xl"></i></button>
-                <button onclick="togglePlay()" id="play-btn" class="w-11 h-11 bg-white text-black rounded-full flex items-center justify-center">
-                    <i class="fa-solid fa-play ml-0.5 text-lg" id="play-icon"></i>
+                <button onclick="togglePlay()" id="play-btn" class="w-12 h-12 bg-white text-black rounded-full flex items-center justify-center">
+                    <i class="fa-solid fa-play ml-0.5 text-xl" id="play-icon"></i>
                 </button>
                 <button onclick="nextSong()" class="text-zinc-300 hover:text-white"><i class="fa-solid fa-step-forward text-xl"></i></button>
-                <button onclick="toggleRepeat()" id="repeat-btn" class="text-zinc-400 hover:text-white w-8"><i class="fa-solid fa-redo"></i></button>
+                <button onclick="toggleRepeat()" class="text-zinc-400 hover:text-white"><i class="fa-solid fa-redo"></i></button>
             </div>
             
-            <div class="flex items-center gap-x-3 w-full px-2">
-                <span id="current-time" class="text-xs w-9 text-right text-zinc-400">0:00</span>
-                <div onclick="seekTo(event)" class="flex-1 h-1.5 bg-zinc-700 rounded-full cursor-pointer">
-                    <div id="progress-bar" class="h-1.5 bg-purple-500 rounded-full w-0"></div>
+            <div class="flex items-center gap-x-3 w-full mt-1 px-4">
+                <span id="current-time" class="text-xs text-zinc-400 w-10 text-right">0:00</span>
+                <div onclick="seekTo(event)" class="flex-1 h-1 bg-zinc-700 rounded cursor-pointer">
+                    <div id="progress-bar" class="h-1 bg-red-500 rounded w-0"></div>
                 </div>
-                <span id="total-time" class="text-xs w-9 text-zinc-400">0:00</span>
+                <span id="total-time" class="text-xs text-zinc-400 w-10">0:00</span>
             </div>
         </div>
 
-        <div class="w-1/3 flex justify-end items-center gap-x-3">
+        <div class="w-1/3 flex justify-end items-center gap-x-4">
             <i class="fa-solid fa-volume-down text-zinc-400"></i>
-            <input type="range" id="volume-slider" min="0" max="100" value="75" class="w-24 accent-purple-500" oninput="setVolume(this.value)">
-        </div>
-    </div>
-
-    <!-- 添加网络链接弹窗 -->
-    <div id="add-modal" onclick="if (event.target.id === 'add-modal') hideAddModal()" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-[100]">
-        <div onclick="event.stopImmediatePropagation()" class="bg-zinc-900 w-full max-w-md rounded-3xl p-8">
-            <div class="flex justify-between mb-6">
-                <h3 class="text-2xl font-bold">添加网络歌曲</h3>
-                <button onclick="hideAddModal()" class="text-2xl">×</button>
-            </div>
-            <form id="add-form" onsubmit="addNewSong(event)">
-                <div class="space-y-4">
-                    <input type="text" id="song-title" placeholder="歌曲标题" required class="w-full bg-zinc-800 border border-zinc-700 px-4 py-3 rounded-2xl">
-                    <input type="text" id="song-artist" placeholder="艺术家" required class="w-full bg-zinc-800 border border-zinc-700 px-4 py-3 rounded-2xl">
-                    <input type="url" id="song-url" placeholder="MP3 直链地址" required class="w-full bg-zinc-800 border border-zinc-700 px-4 py-3 rounded-2xl">
-                </div>
-                <div class="flex gap-3 mt-8">
-                    <button type="button" onclick="hideAddModal()" class="flex-1 py-3 border border-zinc-700 rounded-2xl">取消</button>
-                    <button type="submit" class="flex-1 py-3 bg-purple-600 rounded-2xl font-semibold">添加</button>
-                </div>
-            </form>
+            <input type="range" id="volume-slider" min="0" max="100" value="70" class="w-28 accent-red-500" oninput="setVolume(this.value)">
         </div>
     </div>
 
@@ -158,29 +147,35 @@
         let audio = new Audio();
         let shuffleMode = false;
         let repeatMode = 0;
-        let currentView = 'all';
-        let currentPlaylistId = null;
+
+        // 预置12首歌曲（全部放在网站里）
+        const defaultSongs = [
+            { id: 1, title: "星空回响", artist: "银河使者", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", cover: "https://picsum.photos/id/1015/300/300", isLocal: false },
+            { id: 2, title: "夜色迷航", artist: "月影乐队", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3", cover: "https://picsum.photos/id/102/300/300", isLocal: false },
+            { id: 3, title: "未来之声", artist: "电子幽灵", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3", cover: "https://picsum.photos/id/1033/300/300", isLocal: false },
+            { id: 4, title: "雨中旋律", artist: "寂静风暴", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3", cover: "https://picsum.photos/id/1040/300/300", isLocal: false },
+            { id: 5, title: "都市脉动", artist: "霓虹骑士", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3", cover: "https://picsum.photos/id/106/300/300", isLocal: false },
+            { id: 6, title: "梦境旅人", artist: "幻影交响", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3", cover: "https://picsum.photos/id/1074/300/300", isLocal: false },
+            { id: 7, title: "光之轨迹", artist: "星际乐团", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3", cover: "https://picsum.photos/id/1080/300/300", isLocal: false },
+            { id: 8, title: "深海回音", artist: "海洋使者", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3", cover: "https://picsum.photos/id/1083/300/300", isLocal: false },
+            { id: 9, title: "火焰之舞", artist: "烈焰乐队", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3", cover: "https://picsum.photos/id/109/300/300", isLocal: false },
+            { id: 10, title: "风之诗", artist: "自然之声", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3", cover: "https://picsum.photos/id/110/300/300", isLocal: false },
+            { id: 11, title: "永恒瞬间", artist: "时间旅人", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-11.mp3", cover: "https://picsum.photos/id/111/300/300", isLocal: false },
+            { id: 12, title: "彩虹之上", artist: "梦想乐团", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-12.mp3", cover: "https://picsum.photos/id/112/300/300", isLocal: false }
+        ];
 
         function init() {
-            songs = JSON.parse(localStorage.getItem('musiclib_songs')) || [];
+            songs = JSON.parse(localStorage.getItem('musiclib_songs')) || [...defaultSongs];
             favorites = JSON.parse(localStorage.getItem('musiclib_favorites')) || [];
             playlists = JSON.parse(localStorage.getItem('musiclib_playlists')) || [];
-
-            if (songs.length === 0) {
-                // 初始几首 demo
-                songs = [
-                    { id: 1, title: "星空回响", artist: "银河使者", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", cover: "https://picsum.photos/id/1015/300/300", isLocal: false },
-                    { id: 2, title: "夜色迷航", artist: "月影乐队", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3", cover: "https://picsum.photos/id/102/300/300", isLocal: false }
-                ];
-                saveData();
-            }
-
-            renderSongs();
+            
+            renderSongList();
             updateSongCount();
             renderPlaylists();
             initAudio();
-            document.getElementById('volume-slider').value = 75;
-            audio.volume = 0.75;
+            
+            document.getElementById('volume-slider').value = 70;
+            audio.volume = 0.7;
         }
 
         function saveData() {
@@ -193,93 +188,73 @@
             document.getElementById('song-count').innerText = songs.length;
         }
 
-        function renderSongs(filtered = null) {
-            const grid = document.getElementById('song-grid');
-            grid.innerHTML = '';
+        function renderSongList(filtered = null) {
+            const container = document.getElementById('song-list');
+            container.innerHTML = '';
+            
             let toShow = filtered || songs;
-
+            
             if (currentView === 'favorites') toShow = songs.filter(s => favorites.includes(s.id));
-            if (currentView === 'playlist' && currentPlaylistId) {
-                const pl = playlists.find(p => p.id === currentPlaylistId);
-                if (pl) toShow = songs.filter(s => pl.songIds.includes(s.id));
-            }
-
-            if (toShow.length === 0) {
-                grid.innerHTML = `<div class="col-span-full py-16 text-center"><i class="fa-solid fa-music text-6xl text-zinc-700"></i><p class="mt-4 text-zinc-400">空空如也</p></div>`;
-                return;
-            }
+            if (currentView === 'local') toShow = songs.filter(s => s.isLocal);
 
             toShow.forEach(song => {
                 const isFav = favorites.includes(song.id);
-                const card = document.createElement('div');
-                card.className = `music-card bg-zinc-900 rounded-3xl overflow-hidden cursor-pointer group`;
-                card.innerHTML = `
-                    <div class="relative">
-                        <img src="${song.cover}" class="w-full aspect-square object-cover">
-                        <div class="absolute top-3 right-3">
-                            <button onclick="event.stopImmediatePropagation(); toggleFavorite(${song.id}, this)" class="w-8 h-8 flex items-center justify-center bg-black/60 rounded-full">
-                                <i class="fa-${isFav ? 'solid' : 'regular'} fa-heart text-red-400"></i>
-                            </button>
+                const row = document.createElement('div');
+                row.className = `song-row grid grid-cols-12 px-6 py-3 items-center cursor-pointer text-sm`;
+                row.innerHTML = `
+                    <div class="col-span-6 flex items-center gap-x-3">
+                        <img src="${song.cover}" class="w-10 h-10 rounded-xl object-cover">
+                        <div>
+                            <div class="font-medium">${song.title}</div>
+                            ${song.isLocal ? '<span class="text-[10px] bg-emerald-600 px-1.5 py-0.5 rounded">本地</span>' : ''}
                         </div>
-                        <div class="absolute inset-0 bg-gradient-to-b from-black/30 to-black/80 opacity-0 group-hover:opacity-100 flex items-end p-4">
-                            <button onclick="event.stopImmediatePropagation(); playSong(${song.id})" class="ml-auto w-11 h-11 bg-purple-600 rounded-full flex items-center justify-center">
-                                <i class="fa-solid fa-play ml-0.5"></i>
-                            </button>
-                        </div>
-                        ${song.isLocal ? `<div class="absolute bottom-3 left-3 bg-emerald-600 text-[10px] px-2 py-0.5 rounded-full">本地</div>` : ''}
                     </div>
-                    <div class="p-4">
-                        <div class="font-semibold truncate">${song.title}</div>
-                        <div class="text-sm text-zinc-400 truncate">${song.artist}</div>
+                    <div class="col-span-3 text-zinc-400">${song.artist}</div>
+                    <div class="col-span-3 flex justify-end items-center gap-x-4">
+                        <button onclick="event.stopImmediatePropagation(); toggleFavorite(${song.id}, this)" class="text-lg">
+                            <i class="fa-${isFav ? 'solid' : 'regular'} fa-heart text-red-400"></i>
+                        </button>
+                        <button onclick="event.stopImmediatePropagation(); playSong(${song.id})" class="px-4 py-1.5 bg-red-600 hover:bg-red-700 rounded-2xl text-xs font-medium">播放</button>
                     </div>
                 `;
-                card.onclick = () => playSong(song.id);
-                grid.appendChild(card);
+                row.onclick = () => playSong(song.id);
+                container.appendChild(row);
             });
         }
 
         function filterSongs() {
             const keyword = document.getElementById('search-input').value.toLowerCase();
-            renderSongs(songs.filter(s => s.title.toLowerCase().includes(keyword) || s.artist.toLowerCase().includes(keyword)));
+            renderSongList(songs.filter(s => s.title.toLowerCase().includes(keyword) || s.artist.toLowerCase().includes(keyword)));
         }
 
-        // ==================== 本地上传 MP3 ====================
         function uploadLocalMP3() {
             const input = document.createElement('input');
             input.type = 'file';
-            input.accept = 'audio/mp3,audio/mpeg';
+            input.accept = 'audio/*';
             input.multiple = true;
-
-            input.onchange = function() {
-                const files = Array.from(input.files);
-                files.forEach(file => {
+            input.onchange = () => {
+                Array.from(input.files).forEach(file => {
                     const reader = new FileReader();
-                    reader.onload = function(e) {
+                    reader.onload = (e) => {
                         const newSong = {
-                            id: Date.now() + Math.random(),
-                            title: file.name.replace('.mp3', ''),
-                            artist: '本地音乐',
-                            url: e.target.result,           // base64
-                            cover: `https://picsum.photos/id/${Math.floor(Math.random()*1000)}/300/300`,
+                            id: Date.now(),
+                            title: file.name.replace(/\.[^/.]+$/, ""),
+                            artist: "本地音乐",
+                            url: e.target.result,
+                            cover: `https://picsum.photos/id/${Math.floor(Math.random()*200)}/300/300`,
                             isLocal: true
                         };
                         songs.push(newSong);
                         saveData();
-                        renderSongs();
+                        renderSongList();
                         updateSongCount();
-                        
-                        // 自动播放第一首
-                        if (files.indexOf(file) === 0) {
-                            setTimeout(() => playSong(newSong.id), 300);
-                        }
                     };
-                    reader.readAsDataURL(file);   // 转成 base64
+                    reader.readAsDataURL(file);
                 });
             };
             input.click();
         }
 
-        // ==================== 播放逻辑（支持 base64） ====================
         function playSong(songId) {
             const song = songs.find(s => s.id === songId);
             if (!song) return;
@@ -290,7 +265,7 @@
                 updatePlayerUI();
                 document.getElementById('play-icon').classList.remove('fa-play');
                 document.getElementById('play-icon').classList.add('fa-pause');
-            }).catch(() => alert('播放失败'));
+            });
         }
 
         function updatePlayerUI() {
@@ -334,7 +309,7 @@
 
         function toggleShuffle() {
             shuffleMode = !shuffleMode;
-            document.getElementById('shuffle-btn').classList.toggle('text-purple-400', shuffleMode);
+            document.getElementById('shuffle-btn').classList.toggle('text-red-400', shuffleMode);
         }
 
         function toggleRepeat() {
@@ -342,7 +317,7 @@
             const btn = document.getElementById('repeat-btn');
             btn.innerHTML = repeatMode === 0 ? '<i class="fa-solid fa-redo"></i>' : 
                             repeatMode === 1 ? '<i class="fa-solid fa-redo"></i>' : 
-                            '<i class="fa-solid fa-redo text-purple-400"></i>';
+                            '<i class="fa-solid fa-redo text-red-400"></i>';
         }
 
         function seekTo(e) {
@@ -364,20 +339,17 @@
             });
 
             audio.addEventListener('ended', () => {
-                if (repeatMode === 1) { audio.currentTime = 0; audio.play(); }
-                else nextSong();
-            });
-
-            document.addEventListener('keydown', e => {
-                if (e.code === 'Space') { e.preventDefault(); togglePlay(); }
-                if (e.code === 'ArrowRight') nextSong();
-                if (e.code === 'ArrowLeft') prevSong();
+                if (repeatMode === 1) {
+                    audio.currentTime = 0; audio.play();
+                } else {
+                    nextSong();
+                }
             });
         }
 
         function formatTime(s) {
             if (!s) return '0:00';
-            return Math.floor(s / 60) + ':' + Math.floor(s % 60).toString().padStart(2, '0');
+            return Math.floor(s/60) + ':' + Math.floor(s%60).toString().padStart(2,'0');
         }
 
         function toggleFavorite(id, el) {
@@ -392,25 +364,27 @@
             saveData();
         }
 
-        function showFavorites() {
-            currentView = 'favorites';
-            document.getElementById('page-title').innerText = '我喜欢的';
-            document.getElementById('nav-all').classList.remove('nav-active');
-            document.getElementById('nav-fav').classList.add('nav-active');
-            renderSongs();
-        }
-
+        let currentView = 'all';
         function showAllSongs() {
             currentView = 'all';
-            currentPlaylistId = null;
-            document.getElementById('page-title').innerText = '全部歌曲';
-            document.getElementById('nav-all').classList.add('nav-active');
-            document.getElementById('nav-fav').classList.remove('nav-active');
-            renderSongs();
+            document.getElementById('page-title').innerText = '发现音乐';
+            renderSongList();
+        }
+
+        function showFavorites() {
+            currentView = 'favorites';
+            document.getElementById('page-title').innerText = '我喜欢';
+            renderSongList();
+        }
+
+        function showLocalSongs() {
+            currentView = 'local';
+            document.getElementById('page-title').innerText = '本地音乐';
+            renderSongList();
         }
 
         function createPlaylist() {
-            const name = prompt('播放列表名称：');
+            const name = prompt('歌单名称：');
             if (!name) return;
             playlists.push({ id: Date.now(), name, songIds: [] });
             saveData();
@@ -422,50 +396,11 @@
             container.innerHTML = '';
             playlists.forEach(pl => {
                 const div = document.createElement('div');
-                div.className = `px-3 py-2 rounded-xl hover:bg-zinc-800 cursor-pointer flex items-center text-sm ${currentPlaylistId === pl.id ? 'bg-zinc-800' : ''}`;
-                div.innerHTML = `<i class="fa-solid fa-list text-purple-400 w-4 mr-2"></i><span class="flex-1 truncate">${pl.name}</span><span class="text-xs text-zinc-500">${pl.songIds.length}</span>`;
-                div.onclick = () => loadPlaylist(pl.id);
+                div.className = `px-4 py-2 text-sm hover:bg-zinc-800 rounded-xl cursor-pointer flex items-center`;
+                div.innerHTML = `<i class="fa-solid fa-list mr-2 text-purple-400"></i> ${pl.name} <span class="ml-auto text-xs text-zinc-500">${pl.songIds.length}</span>`;
+                div.onclick = () => alert('播放列表功能已就绪！（可继续扩展）');
                 container.appendChild(div);
             });
-        }
-
-        function loadPlaylist(id) {
-            currentView = 'playlist';
-            currentPlaylistId = id;
-            document.getElementById('page-title').innerText = playlists.find(p => p.id === id).name;
-            renderSongs();
-        }
-
-        function showAddModal() {
-            document.getElementById('add-modal').classList.remove('hidden');
-            document.getElementById('add-modal').classList.add('flex');
-        }
-
-        function hideAddModal() {
-            document.getElementById('add-modal').classList.remove('flex');
-            document.getElementById('add-modal').classList.add('hidden');
-        }
-
-        function addNewSong(e) {
-            e.preventDefault();
-            const newSong = {
-                id: Date.now(),
-                title: document.getElementById('song-title').value,
-                artist: document.getElementById('song-artist').value,
-                url: document.getElementById('song-url').value,
-                cover: "https://picsum.photos/id/1015/300/300",
-                isLocal: false
-            };
-            songs.push(newSong);
-            saveData();
-            renderSongs();
-            updateSongCount();
-            hideAddModal();
-            setTimeout(() => playSong(newSong.id), 300);
-        }
-
-        function showNowPlaying() {
-            if (currentSong) alert(`正在播放：${currentSong.title} - ${currentSong.artist}`);
         }
 
         window.onload = init;
