@@ -7,103 +7,87 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        body { font-family: 'Inter', system-ui, -apple-system, sans-serif; }
-        .qq-nav { transition: all 0.2s; }
-        .qq-nav:hover, .qq-nav-active { background-color: #2a2a2e; }
+        body { font-family: system-ui, -apple-system, sans-serif; }
+        .qq-red { color: #ff2d55; }
         .song-row:hover { background-color: #27272a; }
-        .player { background: linear-gradient(#18181b, #27272a); }
     </style>
 </head>
 <body class="bg-[#0f0f11] text-white">
     <div class="flex h-screen">
         
-        <!-- 左侧导航 (QQ音乐风格) -->
+        <!-- 左侧导航 -->
         <div class="w-60 bg-[#18181b] border-r border-zinc-800 flex flex-col">
-            <div class="p-6">
-                <div class="flex items-center gap-x-3">
-                    <div class="w-10 h-10 bg-gradient-to-br from-red-500 to-purple-600 rounded-2xl flex items-center justify-center">
-                        <i class="fa-brands fa-qq text-3xl"></i>
-                    </div>
-                    <span class="font-bold text-3xl tracking-tighter">QQ音乐</span>
+            <div class="p-6 flex items-center gap-x-3">
+                <div class="w-10 h-10 bg-gradient-to-br from-red-500 to-purple-600 rounded-2xl flex items-center justify-center">
+                    <i class="fa-brands fa-qq text-3xl"></i>
                 </div>
+                <span class="font-bold text-3xl">QQ音乐</span>
             </div>
 
-            <div class="px-3">
-                <div class="qq-nav px-4 py-3 rounded-2xl flex items-center gap-x-3 cursor-pointer qq-nav-active" onclick="showAllSongs()">
+            <div class="px-3 mt-4">
+                <div onclick="showAllSongs()" class="qq-nav px-4 py-3 rounded-2xl flex items-center gap-x-3 cursor-pointer bg-[#27272a]">
                     <i class="fa-solid fa-compass w-5"></i>
                     <span>发现音乐</span>
                 </div>
-                <div class="qq-nav px-4 py-3 rounded-2xl flex items-center gap-x-3 cursor-pointer mt-1" onclick="showFavorites()">
+                <div onclick="showFavorites()" class="qq-nav px-4 py-3 rounded-2xl flex items-center gap-x-3 cursor-pointer mt-1">
                     <i class="fa-solid fa-heart w-5 text-red-400"></i>
                     <span>我喜欢</span>
                 </div>
-                <div class="qq-nav px-4 py-3 rounded-2xl flex items-center gap-x-3 cursor-pointer mt-1" onclick="showLocalSongs()">
+                <div onclick="showLocalSongs()" class="qq-nav px-4 py-3 rounded-2xl flex items-center gap-x-3 cursor-pointer mt-1">
                     <i class="fa-solid fa-folder w-5 text-emerald-400"></i>
                     <span>本地音乐</span>
                 </div>
             </div>
 
-            <div class="mt-8 px-3">
-                <div class="flex items-center justify-between px-4 mb-2">
-                    <span class="text-xs font-semibold text-zinc-400">创建的歌单</span>
-                    <button onclick="createPlaylist()" class="text-purple-400"><i class="fa-solid fa-plus"></i></button>
-                </div>
-                <div id="playlists-list" class="px-1"></div>
-            </div>
-
             <div class="mt-auto p-4 border-t border-zinc-800">
-                <button onclick="uploadLocalMP3()" 
-                        class="w-full flex items-center justify-center gap-x-2 bg-emerald-600 hover:bg-emerald-700 py-3 rounded-2xl text-sm font-semibold">
-                    <i class="fa-solid fa-upload"></i>
-                    <span>上传本地音乐</span>
+                <button onclick="addYouTubeSong()" 
+                        class="w-full flex items-center justify-center gap-x-2 bg-red-600 hover:bg-red-700 py-3 rounded-2xl text-sm font-semibold">
+                    <i class="fa-brands fa-youtube"></i>
+                    <span>添加 YouTube 歌曲</span>
                 </button>
             </div>
         </div>
 
-        <!-- 主内容区 -->
+        <!-- 主内容 -->
         <div class="flex-1 flex flex-col">
             
-            <!-- 顶部搜索栏 -->
+            <!-- 顶部搜索 -->
             <div class="h-16 border-b border-zinc-800 flex items-center px-8 bg-[#18181b]">
-                <div class="flex-1 max-w-2xl">
-                    <div class="relative">
-                        <i class="fa-solid fa-search absolute left-5 top-4 text-zinc-400"></i>
-                        <input id="search-input" type="text" placeholder="搜索歌曲、歌手、歌单" 
-                               class="w-full bg-zinc-800 border border-zinc-700 pl-12 py-3 rounded-3xl text-sm focus:outline-none" oninput="filterSongs()">
-                    </div>
+                <div class="flex-1 max-w-2xl relative">
+                    <i class="fa-solid fa-search absolute left-5 top-4 text-zinc-400"></i>
+                    <input id="search-input" type="text" placeholder="搜索歌曲、歌手（如：周杰伦 晴天）" 
+                           class="w-full bg-zinc-800 border border-zinc-700 pl-12 py-3 rounded-3xl text-sm" 
+                           onkeyup="if (event.key === 'Enter') searchYouTube()">
                 </div>
-                <div class="ml-auto flex items-center gap-x-4">
-                    <div class="flex items-center gap-x-2">
-                        <img src="https://picsum.photos/id/64/32/32" class="w-8 h-8 rounded-full ring-2 ring-purple-500">
-                        <span class="font-medium">Karen</span>
-                    </div>
-                </div>
+                <button onclick="searchYouTube()" 
+                        class="ml-4 px-6 py-3 bg-red-600 hover:bg-red-700 rounded-2xl text-sm font-medium">
+                    搜索 YouTube
+                </button>
             </div>
 
-            <!-- 内容 -->
             <div class="flex-1 p-8 overflow-auto">
                 <div class="flex justify-between items-end mb-6">
                     <div>
                         <h1 id="page-title" class="text-4xl font-bold">发现音乐</h1>
-                        <p id="page-subtitle" class="text-zinc-400 mt-1">共 <span id="song-count">0</span> 首歌曲</p>
+                        <p class="text-zinc-400 mt-1">共 <span id="song-count">0</span> 首</p>
                     </div>
                 </div>
 
-                <!-- 歌曲列表 (QQ音乐风格) -->
+                <!-- 歌曲列表 -->
                 <div class="bg-[#18181b] rounded-3xl overflow-hidden">
                     <div class="grid grid-cols-12 px-6 py-3 text-sm text-zinc-400 border-b border-zinc-700">
-                        <div class="col-span-6">歌曲</div>
+                        <div class="col-span-7">歌曲</div>
                         <div class="col-span-3">歌手</div>
-                        <div class="col-span-3 text-right">操作</div>
+                        <div class="col-span-2 text-right">操作</div>
                     </div>
-                    <div id="song-list" class="divide-y divide-zinc-800"></div>
+                    <div id="song-list" class="divide-y divide-zinc-800 max-h-[calc(100vh-280px)] overflow-auto"></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 底部播放器 (QQ音乐风格) -->
-    <div class="fixed bottom-0 left-0 right-0 player border-t border-zinc-700 h-20 px-6 flex items-center z-50">
+    <!-- 底部播放器 -->
+    <div class="fixed bottom-0 left-0 right-0 bg-[#18181b] border-t border-zinc-700 h-20 px-6 flex items-center z-50">
         <div class="flex items-center gap-x-4 w-1/3">
             <img id="player-cover" src="https://picsum.photos/id/1015/56/56" class="w-14 h-14 rounded-2xl object-cover">
             <div>
@@ -114,13 +98,11 @@
 
         <div class="flex-1 flex flex-col items-center max-w-[520px]">
             <div class="flex items-center gap-x-5">
-                <button onclick="toggleShuffle()" class="text-zinc-400 hover:text-white"><i class="fa-solid fa-random"></i></button>
                 <button onclick="prevSong()" class="text-zinc-300 hover:text-white"><i class="fa-solid fa-step-backward text-xl"></i></button>
                 <button onclick="togglePlay()" id="play-btn" class="w-12 h-12 bg-white text-black rounded-full flex items-center justify-center">
                     <i class="fa-solid fa-play ml-0.5 text-xl" id="play-icon"></i>
                 </button>
                 <button onclick="nextSong()" class="text-zinc-300 hover:text-white"><i class="fa-solid fa-step-forward text-xl"></i></button>
-                <button onclick="toggleRepeat()" class="text-zinc-400 hover:text-white"><i class="fa-solid fa-redo"></i></button>
             </div>
             
             <div class="flex items-center gap-x-3 w-full mt-1 px-4">
@@ -132,56 +114,44 @@
             </div>
         </div>
 
-        <div class="w-1/3 flex justify-end items-center gap-x-4">
-            <i class="fa-solid fa-volume-down text-zinc-400"></i>
-            <input type="range" id="volume-slider" min="0" max="100" value="70" class="w-28 accent-red-500" oninput="setVolume(this.value)">
+        <div class="w-1/3 flex justify-end">
+            <div id="youtube-player" class="hidden"></div>
         </div>
     </div>
 
+    <script src="https://www.youtube.com/iframe_api"></script>
     <script>
         let songs = [];
         let favorites = [];
-        let playlists = [];
         let currentSong = null;
         let isPlaying = false;
-        let audio = new Audio();
-        let shuffleMode = false;
-        let repeatMode = 0;
+        let player;
+        let currentView = 'all';
 
-        // 预置12首歌曲（全部放在网站里）
+        // 预置一些热门歌曲（YouTube Video ID）
         const defaultSongs = [
-            { id: 1, title: "星空回响", artist: "银河使者", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", cover: "https://picsum.photos/id/1015/300/300", isLocal: false },
-            { id: 2, title: "夜色迷航", artist: "月影乐队", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3", cover: "https://picsum.photos/id/102/300/300", isLocal: false },
-            { id: 3, title: "未来之声", artist: "电子幽灵", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3", cover: "https://picsum.photos/id/1033/300/300", isLocal: false },
-            { id: 4, title: "雨中旋律", artist: "寂静风暴", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3", cover: "https://picsum.photos/id/1040/300/300", isLocal: false },
-            { id: 5, title: "都市脉动", artist: "霓虹骑士", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3", cover: "https://picsum.photos/id/106/300/300", isLocal: false },
-            { id: 6, title: "梦境旅人", artist: "幻影交响", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3", cover: "https://picsum.photos/id/1074/300/300", isLocal: false },
-            { id: 7, title: "光之轨迹", artist: "星际乐团", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3", cover: "https://picsum.photos/id/1080/300/300", isLocal: false },
-            { id: 8, title: "深海回音", artist: "海洋使者", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3", cover: "https://picsum.photos/id/1083/300/300", isLocal: false },
-            { id: 9, title: "火焰之舞", artist: "烈焰乐队", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3", cover: "https://picsum.photos/id/109/300/300", isLocal: false },
-            { id: 10, title: "风之诗", artist: "自然之声", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3", cover: "https://picsum.photos/id/110/300/300", isLocal: false },
-            { id: 11, title: "永恒瞬间", artist: "时间旅人", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-11.mp3", cover: "https://picsum.photos/id/111/300/300", isLocal: false },
-            { id: 12, title: "彩虹之上", artist: "梦想乐团", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-12.mp3", cover: "https://picsum.photos/id/112/300/300", isLocal: false }
+            { id: 1, title: "晴天", artist: "周杰伦", videoId: "4iQ2v9d7m8k", cover: "https://picsum.photos/id/1015/300/300" },
+            { id: 2, title: "夜曲", artist: "周杰伦", videoId: "3JZ_D3ELw0k", cover: "https://picsum.photos/id/102/300/300" },
+            { id: 3, title: "江南", artist: "林俊杰", videoId: "9bZkp7q19f0", cover: "https://picsum.photos/id/1033/300/300" },
+            { id: 4, title: "告白气球", artist: "周杰伦", videoId: "dQw4w9wgxcQ", cover: "https://picsum.photos/id/1040/300/300" },
+            { id: 5, title: "七里香", artist: "周杰伦", videoId: "kXYiU_JCYtU", cover: "https://picsum.photos/id/106/300/300" },
+            { id: 6, title: "稻香", artist: "周杰伦", videoId: "9bZkp7q19f0", cover: "https://picsum.photos/id/1074/300/300" },
+            { id: 7, title: "演员", artist: "薛之谦", videoId: "3JZ_D3ELw0k", cover: "https://picsum.photos/id/1080/300/300" },
+            { id: 8, title: "体面", artist: "于文文", videoId: "kXYiU_JCYtU", cover: "https://picsum.photos/id/109/300/300" }
         ];
 
         function init() {
-            songs = JSON.parse(localStorage.getItem('musiclib_songs')) || [...defaultSongs];
-            favorites = JSON.parse(localStorage.getItem('musiclib_favorites')) || [];
-            playlists = JSON.parse(localStorage.getItem('musiclib_playlists')) || [];
+            songs = JSON.parse(localStorage.getItem('qqmusic_songs')) || [...defaultSongs];
+            favorites = JSON.parse(localStorage.getItem('qqmusic_favorites')) || [];
             
             renderSongList();
             updateSongCount();
-            renderPlaylists();
-            initAudio();
-            
-            document.getElementById('volume-slider').value = 70;
-            audio.volume = 0.7;
+            initYouTubePlayer();
         }
 
         function saveData() {
-            localStorage.setItem('musiclib_songs', JSON.stringify(songs));
-            localStorage.setItem('musiclib_favorites', JSON.stringify(favorites));
-            localStorage.setItem('musiclib_playlists', JSON.stringify(playlists));
+            localStorage.setItem('qqmusic_songs', JSON.stringify(songs));
+            localStorage.setItem('qqmusic_favorites', JSON.stringify(favorites));
         }
 
         function updateSongCount() {
@@ -193,163 +163,34 @@
             container.innerHTML = '';
             
             let toShow = filtered || songs;
-            
             if (currentView === 'favorites') toShow = songs.filter(s => favorites.includes(s.id));
-            if (currentView === 'local') toShow = songs.filter(s => s.isLocal);
 
             toShow.forEach(song => {
                 const isFav = favorites.includes(song.id);
                 const row = document.createElement('div');
                 row.className = `song-row grid grid-cols-12 px-6 py-3 items-center cursor-pointer text-sm`;
                 row.innerHTML = `
-                    <div class="col-span-6 flex items-center gap-x-3">
+                    <div class="col-span-7 flex items-center gap-x-3">
                         <img src="${song.cover}" class="w-10 h-10 rounded-xl object-cover">
                         <div>
                             <div class="font-medium">${song.title}</div>
-                            ${song.isLocal ? '<span class="text-[10px] bg-emerald-600 px-1.5 py-0.5 rounded">本地</span>' : ''}
+                            <div class="text-xs text-zinc-400">${song.artist}</div>
                         </div>
                     </div>
                     <div class="col-span-3 text-zinc-400">${song.artist}</div>
-                    <div class="col-span-3 flex justify-end items-center gap-x-4">
+                    <div class="col-span-2 flex justify-end items-center gap-x-3">
                         <button onclick="event.stopImmediatePropagation(); toggleFavorite(${song.id}, this)" class="text-lg">
                             <i class="fa-${isFav ? 'solid' : 'regular'} fa-heart text-red-400"></i>
                         </button>
-                        <button onclick="event.stopImmediatePropagation(); playSong(${song.id})" class="px-4 py-1.5 bg-red-600 hover:bg-red-700 rounded-2xl text-xs font-medium">播放</button>
+                        <button onclick="event.stopImmediatePropagation(); playSong(${song.id})" 
+                                class="px-5 py-1.5 bg-red-600 hover:bg-red-700 rounded-2xl text-xs font-medium">
+                            播放
+                        </button>
                     </div>
                 `;
                 row.onclick = () => playSong(song.id);
                 container.appendChild(row);
             });
-        }
-
-        function filterSongs() {
-            const keyword = document.getElementById('search-input').value.toLowerCase();
-            renderSongList(songs.filter(s => s.title.toLowerCase().includes(keyword) || s.artist.toLowerCase().includes(keyword)));
-        }
-
-        function uploadLocalMP3() {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = 'audio/*';
-            input.multiple = true;
-            input.onchange = () => {
-                Array.from(input.files).forEach(file => {
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        const newSong = {
-                            id: Date.now(),
-                            title: file.name.replace(/\.[^/.]+$/, ""),
-                            artist: "本地音乐",
-                            url: e.target.result,
-                            cover: `https://picsum.photos/id/${Math.floor(Math.random()*200)}/300/300`,
-                            isLocal: true
-                        };
-                        songs.push(newSong);
-                        saveData();
-                        renderSongList();
-                        updateSongCount();
-                    };
-                    reader.readAsDataURL(file);
-                });
-            };
-            input.click();
-        }
-
-        function playSong(songId) {
-            const song = songs.find(s => s.id === songId);
-            if (!song) return;
-            currentSong = song;
-            audio.src = song.url;
-            audio.play().then(() => {
-                isPlaying = true;
-                updatePlayerUI();
-                document.getElementById('play-icon').classList.remove('fa-play');
-                document.getElementById('play-icon').classList.add('fa-pause');
-            });
-        }
-
-        function updatePlayerUI() {
-            if (!currentSong) return;
-            document.getElementById('player-cover').src = currentSong.cover;
-            document.getElementById('player-title').innerText = currentSong.title;
-            document.getElementById('player-artist').innerText = currentSong.artist;
-        }
-
-        function togglePlay() {
-            if (!currentSong) {
-                if (songs.length > 0) playSong(songs[0].id);
-                return;
-            }
-            if (isPlaying) {
-                audio.pause();
-                isPlaying = false;
-                document.getElementById('play-icon').classList.add('fa-play');
-                document.getElementById('play-icon').classList.remove('fa-pause');
-            } else {
-                audio.play();
-                isPlaying = true;
-                document.getElementById('play-icon').classList.remove('fa-play');
-                document.getElementById('play-icon').classList.add('fa-pause');
-            }
-        }
-
-        function nextSong() {
-            if (!currentSong) return;
-            let idx = songs.findIndex(s => s.id === currentSong.id);
-            let next = shuffleMode ? Math.floor(Math.random() * songs.length) : (idx + 1) % songs.length;
-            playSong(songs[next].id);
-        }
-
-        function prevSong() {
-            if (!currentSong) return;
-            let idx = songs.findIndex(s => s.id === currentSong.id);
-            let prev = (idx - 1 + songs.length) % songs.length;
-            playSong(songs[prev].id);
-        }
-
-        function toggleShuffle() {
-            shuffleMode = !shuffleMode;
-            document.getElementById('shuffle-btn').classList.toggle('text-red-400', shuffleMode);
-        }
-
-        function toggleRepeat() {
-            repeatMode = (repeatMode + 1) % 3;
-            const btn = document.getElementById('repeat-btn');
-            btn.innerHTML = repeatMode === 0 ? '<i class="fa-solid fa-redo"></i>' : 
-                            repeatMode === 1 ? '<i class="fa-solid fa-redo"></i>' : 
-                            '<i class="fa-solid fa-redo text-red-400"></i>';
-        }
-
-        function seekTo(e) {
-            if (!currentSong || !audio.duration) return;
-            const rect = e.currentTarget.getBoundingClientRect();
-            audio.currentTime = ((e.clientX - rect.left) / rect.width) * audio.duration;
-        }
-
-        function setVolume(val) {
-            audio.volume = val / 100;
-        }
-
-        function initAudio() {
-            audio.addEventListener('timeupdate', () => {
-                if (!audio.duration) return;
-                document.getElementById('progress-bar').style.width = (audio.currentTime / audio.duration * 100) + '%';
-                document.getElementById('current-time').innerText = formatTime(audio.currentTime);
-                document.getElementById('total-time').innerText = formatTime(audio.duration);
-            });
-
-            audio.addEventListener('ended', () => {
-                if (repeatMode === 1) {
-                    audio.currentTime = 0; audio.play();
-                } else {
-                    nextSong();
-                }
-            });
-        }
-
-        function formatTime(s) {
-            if (!s) return '0:00';
-            return Math.floor(s/60) + ':' + Math.floor(s%60).toString().padStart(2,'0');
         }
 
         function toggleFavorite(id, el) {
@@ -364,7 +205,124 @@
             saveData();
         }
 
-        let currentView = 'all';
+        function playSong(songId) {
+            const song = songs.find(s => s.id === songId);
+            if (!song) return;
+            
+            currentSong = song;
+            document.getElementById('player-title').innerText = song.title;
+            document.getElementById('player-artist').innerText = song.artist;
+            document.getElementById('player-cover').src = song.cover;
+
+            // 播放 YouTube 视频
+            if (player && player.loadVideoById) {
+                player.loadVideoById(song.videoId);
+                player.playVideo();
+            }
+            isPlaying = true;
+            document.getElementById('play-icon').classList.remove('fa-play');
+            document.getElementById('play-icon').classList.add('fa-pause');
+        }
+
+        function togglePlay() {
+            if (!player) return;
+            if (isPlaying) {
+                player.pauseVideo();
+                isPlaying = false;
+                document.getElementById('play-icon').classList.add('fa-play');
+                document.getElementById('play-icon').classList.remove('fa-pause');
+            } else {
+                player.playVideo();
+                isPlaying = true;
+                document.getElementById('play-icon').classList.remove('fa-play');
+                document.getElementById('play-icon').classList.add('fa-pause');
+            }
+        }
+
+        function nextSong() {
+            if (!currentSong) return;
+            let idx = songs.findIndex(s => s.id === currentSong.id);
+            let next = (idx + 1) % songs.length;
+            playSong(songs[next].id);
+        }
+
+        function prevSong() {
+            if (!currentSong) return;
+            let idx = songs.findIndex(s => s.id === currentSong.id);
+            let prev = (idx - 1 + songs.length) % songs.length;
+            playSong(songs[prev].id);
+        }
+
+        function searchYouTube() {
+            const keyword = document.getElementById('search-input').value.trim();
+            if (!keyword) return;
+
+            // 简单搜索：先在已有歌曲里找
+            const filtered = songs.filter(s => 
+                s.title.includes(keyword) || s.artist.includes(keyword)
+            );
+
+            if (filtered.length > 0) {
+                renderSongList(filtered);
+            } else {
+                alert(`未在本地找到“${keyword}”，\n你可以点击下方“添加 YouTube 歌曲”手动添加！`);
+            }
+        }
+
+        function addYouTubeSong() {
+            const url = prompt("请输入 YouTube 视频链接或视频ID：\n例如：https://www.youtube.com/watch?v=3JZ_D3ELw0k");
+            if (!url) return;
+
+            // 提取 videoId
+            let videoId = url;
+            if (url.includes('youtube.com')) {
+                const match = url.match(/[?&]v=([^&]+)/);
+                if (match) videoId = match[1];
+            } else if (url.includes('youtu.be')) {
+                videoId = url.split('/').pop();
+            }
+
+            const title = prompt("请输入歌曲名称：", "未知歌曲");
+            const artist = prompt("请输入歌手：", "未知歌手");
+
+            const newSong = {
+                id: Date.now(),
+                title: title,
+                artist: artist,
+                videoId: videoId,
+                cover: `https://picsum.photos/id/${Math.floor(Math.random()*200)}/300/300`
+            };
+
+            songs.push(newSong);
+            saveData();
+            renderSongList();
+            updateSongCount();
+            
+            setTimeout(() => {
+                playSong(newSong.id);
+            }, 300);
+        }
+
+        function initYouTubePlayer() {
+            // YouTube IFrame API 加载后会自动调用 onYouTubeIframeAPIReady
+        }
+
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('youtube-player', {
+                height: '0',
+                width: '0',
+                playerVars: { 'autoplay': 0, 'controls': 0 },
+                events: {
+                    'onReady': () => console.log('YouTube Player Ready'),
+                    'onStateChange': (event) => {
+                        if (event.data === YT.PlayerState.ENDED) {
+                            nextSong();
+                        }
+                    }
+                }
+            });
+        }
+
         function showAllSongs() {
             currentView = 'all';
             document.getElementById('page-title').innerText = '发现音乐';
@@ -380,27 +338,7 @@
         function showLocalSongs() {
             currentView = 'local';
             document.getElementById('page-title').innerText = '本地音乐';
-            renderSongList();
-        }
-
-        function createPlaylist() {
-            const name = prompt('歌单名称：');
-            if (!name) return;
-            playlists.push({ id: Date.now(), name, songIds: [] });
-            saveData();
-            renderPlaylists();
-        }
-
-        function renderPlaylists() {
-            const container = document.getElementById('playlists-list');
-            container.innerHTML = '';
-            playlists.forEach(pl => {
-                const div = document.createElement('div');
-                div.className = `px-4 py-2 text-sm hover:bg-zinc-800 rounded-xl cursor-pointer flex items-center`;
-                div.innerHTML = `<i class="fa-solid fa-list mr-2 text-purple-400"></i> ${pl.name} <span class="ml-auto text-xs text-zinc-500">${pl.songIds.length}</span>`;
-                div.onclick = () => alert('播放列表功能已就绪！（可继续扩展）');
-                container.appendChild(div);
-            });
+            renderSongList(songs.filter(s => s.isLocal));
         }
 
         window.onload = init;
